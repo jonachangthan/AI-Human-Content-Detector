@@ -15,8 +15,7 @@
 
 ### 1. 複製專案 (Clone Repository)
 ```bash
-git clone [https://github.com/您的帳號/您的專案名稱.git](https://github.com/您的帳號/您的專案名稱.git)
-
+git clone https://github.com/jonachangthan/AI-Human-Text-Detector.git
 ```
 
 
