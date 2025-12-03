@@ -3,7 +3,7 @@
 ## 📖 專案簡介 (Project Description)
 這是一個基於 NLP 深度學習模型的 Web 應用程式，旨在檢測輸入的英文文本是由 **人工智慧 (如 ChatGPT)** 生成的，還是由 **人類 (Human)** 撰寫的。
 
-本專案作為 **HW5 — Advanced Topic** 的 Q1 作業，使用了 Hugging Face 的 Transformers 函式庫與 Streamlit 框架進行開發。
+本專案使用了 Hugging Face 的 Transformers 函式庫與 Streamlit 框架進行開發。
 
 ## 🚀 功能特色 (Features)
 * **即時偵測**：輸入文本後立即進行推論分析。
@@ -16,7 +16,7 @@
 ### 1. 複製專案 (Clone Repository)
 ```bash
 git clone [https://github.com/您的帳號/您的專案名稱.git](https://github.com/您的帳號/您的專案名稱.git)
-cd 您的專案名稱
+
 ```
 
 
