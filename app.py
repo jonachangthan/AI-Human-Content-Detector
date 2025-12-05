@@ -5,7 +5,7 @@ from transformers import pipeline
 st.set_page_config(page_title="AI vs Human Detector", page_icon="🤖")
 
 st.title("🤖 AI 文本偵測器")
-st.markdown("請輸入一段英文文章（建議長度 50 字以上），模型將判斷這段文字是由 **AI 生成** 還是 **人類撰寫**。")
+st.markdown("請輸入一段英文文章，模型將判斷這段文字是由 **AI 生成** 還是 **人類撰寫**。")
 
 # 側邊欄說明
 with st.sidebar:
@@ -14,11 +14,9 @@ with st.sidebar:
     st.markdown("---")
     st.write("Created for HW5 - Advanced Topic")
 
-# 1. 載入模型 (使用 @st.cache_resource 避免每次重整都重新下載/載入)
+# 1. 載入模型
 @st.cache_resource
 def load_model():
-    # 這裡使用 pipeline 自動下載並載入預訓練模型
-    # 注意：第一次執行會下載約 500MB 的模型權重，請耐心等候
     classifier = pipeline("text-classification", model="roberta-base-openai-detector")
     return classifier
 
@@ -38,29 +36,22 @@ if st.button("開始分析 🚀") and model_loaded:
     if not user_input.strip():
         st.warning("請先輸入文字！")
     else:
-        # 模型通常有長度限制 (512 tokens)，這裡簡單截斷過長的輸入以防報錯
-        # 實際產品應用需做分段處理 (Chunking)
-        truncated_input = user_input[:2000] 
-        
         with st.spinner('AI 正在讀取並分析特徵...'):
-            # 獲取預測結果，return_all_scores=True 讓我們同時拿到 Real 和 Fake 的機率
-            # 注意：新版 transformers pipeline 參數可能是 top_k=None
-            results = pipe(truncated_input, top_k=None)
+            # --- 修正開始 ---
+            # 加入 truncation=True 與 max_length=512 解決長度報錯問題
+            results = pipe(user_input, top_k=None, truncation=True, max_length=512)
+            # --- 修正結束 ---
             
-            # results 結構通常是 [[{'label': 'Real', 'score': 0.9}, {'label': 'Fake', 'score': 0.1}]]
             # 整理數據
             scores = {item['label']: item['score'] for item in results}
             
-            # 原始模型標籤定義：
-            # 'Real' = Human (人類)
-            # 'Fake' = AI (生成)
+            # 原始模型標籤定義： 'Real' = Human, 'Fake' = AI
             ai_score = scores.get('Fake', 0.0)
             human_score = scores.get('Real', 0.0)
 
         # 4. 顯示結果
         st.subheader("📊 分析結果")
         
-        # 建立兩欄佈局
         col1, col2 = st.columns(2)
         
         with col1:
@@ -69,9 +60,8 @@ if st.button("開始分析 🚀") and model_loaded:
             
         with col2:
             st.metric(label="人類撰寫機率", value=f"{human_score:.2%}")
-            st.progress(human_score, "primary") # primary color usually indicates 'good' or 'base'
+            st.progress(human_score, "primary")
 
-        # 根據結果顯示結論
         st.divider()
         if ai_score > 0.8:
             st.error("🚨 判定結果：這極大機率是由 **AI (如 ChatGPT)** 生成的內容。")
@@ -80,6 +70,5 @@ if st.button("開始分析 🚀") and model_loaded:
         else:
             st.success("✅ 判定結果：這看起來像是 **人類 (Human)** 撰寫的內容。")
 
-        # 顯示原始數據 (Debugging用途，也可作為作業的詳細輸出)
         with st.expander("查看原始數據"):
             st.json(results)
