@@ -62,3 +62,6 @@ Streamlit
 Hugging Face Transformers
 
 PyTorch
+
+## Streamlit web
+https://ai-human-text-detector-kwajyyjqmmu8xa98xp3fgy.streamlit.app/
